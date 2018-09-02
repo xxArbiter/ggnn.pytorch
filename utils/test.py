@@ -24,4 +24,4 @@ def test(dataloader, net, criterion, optimizer, opt):
         test_loss += criterion(output, target).data
 
     test_loss /= len(dataloader.dataset)
-    print('Test set: MSE loss: {:.4f}'.format(test_loss))
+    print('Test set: MSE loss: {:.4f}'.format(test_loss*10000))
