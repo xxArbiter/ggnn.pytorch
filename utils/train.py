@@ -1,13 +1,18 @@
 import torch
 from torch.autograd import Variable
 
+# b: batch_size
+# n: number of nodes
+# d: number of edge types
+# D: number of hidden state
+
 def train(epoch, dataloader, net, criterion, optimizer, opt):
     net.train()
     for i, (adj_matrix, annotation, target) in enumerate(dataloader, 0):
         net.zero_grad()
 
         padding = torch.zeros(len(annotation), opt.n_node, opt.state_dim - opt.annotation_dim).double()
-        init_input = torch.cat((annotation, padding), 2)
+        init_input = torch.cat((annotation, padding), 2)    # b * n * D
         if opt.cuda:
             init_input = init_input.cuda()
             adj_matrix = adj_matrix.cuda()

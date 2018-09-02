@@ -40,10 +40,10 @@ class Propogator(nn.Module):
         )
 
     def forward(self, state_in, state_out, state_cur, A):
-        A_in = A[:, :, :self.n_node*self.n_edge_types]
+        A_in = A[:, :, :self.n_node*self.n_edge_types]  # b * n * nd
         A_out = A[:, :, self.n_node*self.n_edge_types:]
 
-        a_in = torch.bmm(A_in, state_in)
+        a_in = torch.bmm(A_in, state_in)                # b * n * D
         a_out = torch.bmm(A_out, state_out)
         a = torch.cat((a_in, a_out, state_cur), 2)
 
@@ -66,8 +66,8 @@ class GGNN(nn.Module):
     def __init__(self, opt):
         super(GGNN, self).__init__()
 
-        assert (opt.state_dim >= opt.annotation_dim,  \
-                'state_dim must be no less than annotation_dim')
+        assert opt.state_dim >= opt.annotation_dim,  \
+                'state_dim must be no less than annotation_dim'
 
         self.state_dim = opt.state_dim
         self.annotation_dim = opt.annotation_dim
@@ -93,6 +93,7 @@ class GGNN(nn.Module):
             nn.Linear(self.state_dim + self.annotation_dim, self.state_dim),
             nn.Tanh(),
             nn.Linear(self.state_dim, 1)
+            nn.Sigmoid()
         )
 
         self._initialization()
@@ -108,10 +109,10 @@ class GGNN(nn.Module):
             in_states = []
             out_states = []
             for i in range(self.n_edge_types):
-                in_states.append(self.in_fcs[i](prop_state))
+                in_states.append(self.in_fcs[i](prop_state))    # d * b * n * D
                 out_states.append(self.out_fcs[i](prop_state))
-            in_states = torch.stack(in_states).transpose(0, 1).contiguous()
-            in_states = in_states.view(-1, self.n_node*self.n_edge_types, self.state_dim)
+            in_states = torch.stack(in_states).transpose(0, 1).contiguous()                 # b * d * n * D
+            in_states = in_states.view(-1, self.n_node*self.n_edge_types, self.state_dim)   # b * nd * D
             out_states = torch.stack(out_states).transpose(0, 1).contiguous()
             out_states = out_states.view(-1, self.n_node*self.n_edge_types, self.state_dim)
 
