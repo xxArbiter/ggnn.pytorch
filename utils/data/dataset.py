@@ -30,8 +30,8 @@ def loadData():
 
 def dataConvert(data):
     dataList = []
-    for t in range(data.shape[0] - 144):    # T - truncate
-        dataList.append([data[t:t+144, :], data[t+144, :]]) # [annotation[144,n], target[1,n]]
+    for t in range(data.shape[1] - 144):    # T - truncate
+        dataList.append([data[:, t:t+144], data[:, t+144]]) # [annotation[144,n], target[1,n]]
     return dataList
 
 def splitSet(data):
@@ -53,9 +53,10 @@ class bAbIDataset():
         graph = loadGraph()
         self.A = formAdjMatrix(graph)
         allData = loadData()[0, :, :, 0]   # [T, n]
+        allData = allData.transpose()      # [n, T]
         self.n_edge_types =  1
         self.n_tasks = 1
-        self.n_node = allData.shape[1]
+        self.n_node = allData.shape[0]
 
         allData = dataConvert(allData)
         trainData, valData = splitSet(allData)

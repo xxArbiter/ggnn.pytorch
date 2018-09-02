@@ -21,12 +21,7 @@ def test(dataloader, net, criterion, optimizer, opt):
 
         output = net(init_input, annotation, adj_matrix)
 
-        test_loss += criterion(output, target).data[0]
-        pred = output.data.max(1, keepdim=True)[1]
-
-        correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+        test_loss += criterion(output, target).data
 
     test_loss /= len(dataloader.dataset)
-    print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
-        test_loss, correct, len(dataloader.dataset),
-        100. * correct / len(dataloader.dataset)))
+    print('Test set: MSE loss: {:.4f}'.format(test_loss))

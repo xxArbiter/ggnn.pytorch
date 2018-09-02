@@ -55,7 +55,7 @@ def main(opt):
     net.double()
     print(net)
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.MSELoss()
 
     if opt.cuda:
         net.cuda()
